@@ -3,3 +3,4 @@ class Nameable
       raise NotImplementedError, 'Subclass must implement correct_name method'
     end
   end
+  
