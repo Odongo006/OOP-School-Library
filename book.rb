@@ -12,4 +12,3 @@ class Book
     rentals << Rental.new(date, person, self)
   end
 end
-  
