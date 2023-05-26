@@ -1,15 +1,13 @@
-require './nameable'
-
 class Person < Nameable
-  attr_reader :id
-  attr_accessor :name, :age
+  attr_accessor :name, :age, :rentals
 
   def initialize(age, name = 'Unknown', parent_permission: true)
+    super()
     @id = Random.rand(1..1000)
     @age = age
     @name = name
     @parent_permission = parent_permission
-    super()
+    @rentals = []
   end
 
   def correct_name
@@ -18,6 +16,15 @@ class Person < Nameable
 
   def can_use_services?
     of_age? || @parent_permission
+  end
+
+  def classroom=(classroom)
+    @classroom = classroom
+    classroom.students.push(self) unless classroom.students.include?(self)
+  end
+
+  def add_rental(book, date)
+    rentals << Rental.new(date, book, self)
   end
 
   private
