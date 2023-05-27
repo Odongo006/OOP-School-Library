@@ -5,6 +5,7 @@ require './rental'
 require './student'
 require './teacher'
 require './classroom'
+require_relative 'nameable'
 
 class App
   def initialize
