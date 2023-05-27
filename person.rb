@@ -1,23 +1,16 @@
-require './nameable'
+require 'securerandom'
 
-class Person < Nameable
+class Person
   attr_reader :id
   attr_accessor :name, :age
 
-  def initialize(id, age, name = 'Unknown', parent_permission = nil)
-    super()
-    @id = id
+  def initialize(age, name = 'Unknown', parent_permission: true)
+    raise ArgumentError, 'Invalid age' if age.negative?
+
+    @id = SecureRandom.uuid
     @age = age
     @name = name
-    @parent_permission = if parent_permission.nil?
-                           true
-                         else
-                           parent_permission
-                         end
-  end
-
-  def correct_name
-    name
+    @parent_permission = parent_permission
   end
 
   def can_use_services?
@@ -30,3 +23,6 @@ class Person < Nameable
     @age >= 18
   end
 end
+
+person = Person.new(25)
+puts person.id

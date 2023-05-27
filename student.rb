@@ -1,23 +1,14 @@
-require './person'
+require_relative 'person'
 
 class Student < Person
-  attr_accessor :rentals, :classroom
+  attr_accessor :classroom
 
-  def initialize(id, age, name, parent_permission, classroom = nil)
-    super(id, age, name, parent_permission)
-    unless classroom.nil?
-      @classroom = classroom
-      @classroom.students << self
-    end
-    @rentals = []
-    notify
-  end
-
-  def notify
-    puts "Student #{@name} enrolled"
+  def initialize(classroom, age, name = 'Unknown', parent_permission: true)
+    super(name, age, parent_permission)
+    @classroom = classroom
   end
 
   def play_hooky
-    '¯\(ツ)/¯'
+    '¯(ツ)/¯'
   end
 end
