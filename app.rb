@@ -5,17 +5,19 @@ require './rental'
 require './student'
 require './teacher'
 require './classroom'
-require_relative 'nameable'
+require './data/load'
+require 'json'
 
 class App
   def initialize
+    @load = Load.new
     @books = []
     @people = []
     @rentals = []
   end
 
   def run
-    puts 'Welcome to School Library App!'
+    puts 'Welcome to the School Library App!'
     loop do
       interface_menu
       option = gets.chomp
@@ -28,11 +30,29 @@ class App
   end
 
   def list_books
-    @books.each { |book| puts "#{book.title} by #{book.author}" }
+    @load.load_books
+    if @load.books.empty?
+      puts 'There are no books in the library'
+    else
+      @load.books.each do |book|
+        puts "Title: #{book.title}, Author: #{book.author}".capitalize
+      end
+    end
   end
 
   def list_people
-    @people.each { |person| puts "#{person.name} - #{person.age}" }
+    @load.load_people
+    if @load.people.empty?
+      puts 'There are no people in the library'
+    else
+      @load.people.each do |person|
+        if person.is_a?(Teacher) && person.specialization
+          puts "[Teacher] ID: #{person.id}, Name: #{person.name}, Age: #{person.age}, Specialization: #{person.specialization}"
+        else
+          puts "[Student] ID: #{person.id}, Name: #{person.name}, Age: #{person.age}"
+        end
+      end
+    end
   end
 
   def list_rentals_person
@@ -43,8 +63,9 @@ class App
   end
 
   def show_rentals_person(person_index)
-    puts "#{@people[person_index].name} has rented the following books:"
-    @people[person_index].rentals.map do |rental|
+    person = @people[person_index]
+    puts "#{person.name} has rented the following books:"
+    person.rentals.each do |rental|
       puts "Date: #{rental.date}, Book: #{rental.book.title} by #{rental.book.author}"
     end
   end
@@ -60,7 +81,6 @@ class App
       create_teacher
     else
       puts 'That is not a valid input'
-      nil
     end
   end
 
@@ -71,29 +91,25 @@ class App
     puts 'Age:'
     age = gets.chomp.to_i
     puts 'Has parent permission? [Y/N]?'
-    permission = gets.chomp
-    if permission.match?(/y/i)
-      parent_permission = true
-    elsif permission.match?(/n/i)
-      parent_permission = false
-    else
-      puts 'That is not a valid input'
-      return
-    end
+    permission = gets.chomp.downcase
+    parent_permission = permission == 'y'
     student = Student.new(id, age, name, parent_permission)
     add_person(student)
+    save_person(student)
+    puts 'Student created successfully'
   end
 
   def create_teacher
-    id = @people.length + 1
     puts 'Name:'
     name = gets.chomp
     puts 'Age:'
-    age = gets.chomp
+    age = gets.chomp.to_i
     puts 'Specialization:'
     specialization = gets.chomp
-    teacher = Teacher.new(id, age, name, specialization)
+    teacher = Teacher.new(name, age, specialization)
     add_person(teacher)
+    save_person(teacher)
+    puts 'Teacher created successfully'
   end
 
   def create_book
@@ -103,6 +119,8 @@ class App
     author = gets.chomp
     book = Book.new(title, author)
     add_book(book)
+    save_book(book)
+    puts 'Book created successfully'
   end
 
   def create_rental
@@ -176,5 +194,36 @@ class App
     puts '5 - Create a rental'
     puts '6 - List all rentals for a given person id'
     puts '7 - Exit'
+  end
+
+  def save_person(person)
+    people_data = []
+  
+    if File.exist?('./data/people.json')
+      file = File.read('./data/people.json')
+      people_data = JSON.parse(file) unless file.empty?
+    end
+  
+    if person.is_a?(Teacher)
+      people_data << { id: person.id, name: person.name, age: person.age, specialization: person.specialization }
+    else
+      people_data << { id: person.id, name: person.name, age: person.age }
+    end
+  
+    File.write('./data/people.json', JSON.generate(people_data))
+  end
+  
+
+  def save_book(book)
+    books_data = []
+
+    if File.exist?('./data/books.json')
+      file = File.read('./data/books.json')
+      books_data = JSON.parse(file)
+    end
+
+    books_data << { title: book.title, author: book.author }
+
+    File.write('./data/books.json', JSON.pretty_generate(books_data))
   end
 end
