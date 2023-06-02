@@ -1,4 +1,5 @@
 require_relative '../classroom'
+require_relative '../student'
 
 describe Classroom do
   context 'create a classroom' do
