@@ -212,7 +212,6 @@ class App
   
     File.write('./data/people.json', JSON.generate(people_data))
   end
-  
 
   def save_book(book)
     books_data = []
