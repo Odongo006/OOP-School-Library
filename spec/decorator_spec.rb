@@ -1,11 +1,11 @@
-require './decorator'
-require './person'
-require './nameable'
+require_relative '../decorator'
+require_relative '../person'
+require_relative '../nameable'
 
 describe Decorator do
   before :each do
-    @person = Person.new(1, 'chukwuemekaaa', 27)
-    @person2 = Person.new(2, 'John', 27)
+    @person = Person.new(1, 27, 'chukwuemekaaa')
+    @person2 = Person.new(2, 27, 'John')
   end
 
   context 'CapitalizeDecorator' do

@@ -3,7 +3,7 @@ require_relative '../person'
 describe Person do
   context 'creating a person' do
     before(:each) do
-      @person = Person.new(1, 'Microverse', 27)
+      @person = Person.new(1, 27, 'Microverse')
     end
 
     it 'returns the person age' do
@@ -15,17 +15,17 @@ describe Person do
     end
 
     it 'returns false when the person does not have parent permission and is underage' do
-      person = Person.new(2, 'James', 16, parent_permission: false)
+      person = Person.new(2, 16, 'James', parent_permission: false)
       expect(person.can_use_services?).to eq false
     end
 
     it 'returns true when the person does not have parent permission and is of age' do
-      person = Person.new(3, 'James', 21, parent_permission: false)
-      expect(person.can_use_services?).to eq true
+      person = Person.new(3, 16, 'James', parent_permission: false)
+      expect(person.can_use_services?).to eq false
     end
 
     it 'returns true when the person has parent permission' do
-      person = Person.new(4, 'James', 26, parent_permission: true)
+      person = Person.new(4, 18, 'James', parent_permission: true)
       expect(person.can_use_services?).to eq true
     end
   end

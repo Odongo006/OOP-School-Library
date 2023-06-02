@@ -8,7 +8,7 @@ require_relative '../rental'
 describe Rental do
   before :each do
     @book = Book.new 'Title', 'Author'
-    @person = Teacher.new 26, 'Specialization', 'Name'
+    @person = Teacher.new  'Name' ,26, 'Specialization'
     @rental = Rental.new 'Date', @book, @person
   end
 
@@ -34,7 +34,7 @@ describe Rental do
   describe 'test if they correctly push in a new instance of the Rental object' do
     it 'Should return only one rental when adding a rental to a teacher and a book' do
       sample_book = Book.new 'DS', 'Lorem ipsum'
-      sample_person = Teacher.new 26, 'JS', 'Jonh Doe'
+      sample_person = Teacher.new 'Jonh Doe', 26, 'JS'
       sample_rental = Rental.new '2023-04-26', sample_book, sample_person
       expect(sample_person.rentals.length).to eq 1
       expect(sample_book.rentals.length).to eq 1
@@ -43,7 +43,7 @@ describe Rental do
 
     it 'check if rental book is pushed into rentals correnctly' do
       sample_book = Book.new 'DS', 'Lorem ipsum'
-      sample_person = Teacher.new 26, 'JS', 'Jonh Doe'
+      sample_person = Teacher.new 'Jonh Doe', 26, 'JS'
       sample_rental = Rental.new '2023-04-26', sample_book, sample_person
       expect(sample_person.rentals).to eql [sample_rental]
     end
