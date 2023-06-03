@@ -21,12 +21,12 @@ describe Student do
     end
 
     it 'returns false for can_use_services? when the student does not have parent permission and is underage' do
-      student = Student.new(2, 16, 'Jane',  false)
+      student = Student.new(2, 16, 'Jane', false)
       expect(student.can_use_services?).to eq false
     end
 
     it 'returns true for can_use_services? when the student is of age and does not have parent permission' do
-      student = Student.new(3, 18, 'Mike',  false)
+      student = Student.new(3, 18, 'Mike', false)
       expect(student.can_use_services?).to eq true
     end
   end
@@ -37,7 +37,7 @@ describe Student do
     end
 
     it 'notifies upon student creation' do
-      expect { Student.new(5, 17, 'Alice',  @parent_permission) }.to output("Student Alice enrolled\n").to_stdout
+      expect { Student.new(5, 17, 'Alice', @parent_permission) }.to output("Student Alice enrolled\n").to_stdout
     end
   end
 end

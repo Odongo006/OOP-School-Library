@@ -8,7 +8,7 @@ require_relative '../rental'
 describe Rental do
   before :each do
     @book = Book.new 'Title', 'Author'
-    @person = Teacher.new  'Name' ,26, 'Specialization'
+    @person = Teacher.new 'Name', 26, 'Specialization'
     @rental = Rental.new 'Date', @book, @person
   end
 
