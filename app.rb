@@ -5,17 +5,24 @@ require './rental'
 require './student'
 require './teacher'
 require './classroom'
-require_relative 'nameable'
+require './data/load'
+require './modules/list_records'
+require './modules/create_records'
+require 'json'
 
 class App
+  include ListItem
+  include CreateItem
+
   def initialize
+    @load = Load.new
     @books = []
     @people = []
     @rentals = []
   end
 
   def run
-    puts 'Welcome to School Library App!'
+    puts 'Welcome to the School Library App!'
     loop do
       interface_menu
       option = gets.chomp
@@ -25,113 +32,6 @@ class App
       end
       option_selector(option)
     end
-  end
-
-  def list_books
-    @books.each { |book| puts "#{book.title} by #{book.author}" }
-  end
-
-  def list_people
-    @people.each { |person| puts "#{person.name} - #{person.age}" }
-  end
-
-  def list_rentals_person
-    puts 'Select a person from the following list by number (not id)'
-    @people.each_with_index { |person, index| puts "#{index}) #{person.name}" }
-    person_index = gets.chomp.to_i
-    show_rentals_person(person_index)
-  end
-
-  def show_rentals_person(person_index)
-    puts "#{@people[person_index].name} has rented the following books:"
-    @people[person_index].rentals.map do |rental|
-      puts "Date: #{rental.date}, Book: #{rental.book.title} by #{rental.book.author}"
-    end
-  end
-
-  def create_person
-    puts 'Do you want to create a student (1) or a teacher (2)? [Input the number]'
-    option = gets.chomp
-
-    case option
-    when '1'
-      create_student
-    when '2'
-      create_teacher
-    else
-      puts 'That is not a valid input'
-      nil
-    end
-  end
-
-  def create_student
-    id = @people.length + 1
-    puts 'Name:'
-    name = gets.chomp
-    puts 'Age:'
-    age = gets.chomp.to_i
-    puts 'Has parent permission? [Y/N]?'
-    permission = gets.chomp
-    if permission.match?(/y/i)
-      parent_permission = true
-    elsif permission.match?(/n/i)
-      parent_permission = false
-    else
-      puts 'That is not a valid input'
-      return
-    end
-    student = Student.new(id, age, name, parent_permission)
-    add_person(student)
-  end
-
-  def create_teacher
-    id = @people.length + 1
-    puts 'Name:'
-    name = gets.chomp
-    puts 'Age:'
-    age = gets.chomp
-    puts 'Specialization:'
-    specialization = gets.chomp
-    teacher = Teacher.new(id, age, name, specialization)
-    add_person(teacher)
-  end
-
-  def create_book
-    puts 'Title:'
-    title = gets.chomp
-    puts 'Author:'
-    author = gets.chomp
-    book = Book.new(title, author)
-    add_book(book)
-  end
-
-  def create_rental
-    puts 'Select a book from the following list by number'
-    @books.each_with_index { |book, index| puts "#{index}) #{book.title}" }
-    book_index = gets.chomp.to_i
-
-    if book_index.negative? || book_index >= @books.length
-      puts 'Invalid book selection'
-      return
-    end
-
-    puts 'Select a person from the following list by number (not id)'
-    @people.each_with_index { |person, index| puts "#{index}) #{person.name}" }
-    person_index = gets.chomp.to_i
-
-    if person_index.negative? || person_index >= @people.length
-      puts 'Invalid person selection'
-      return
-    end
-
-    puts 'Date:'
-    date = gets.chomp
-
-    book = @books[book_index]
-    puts "Selected book: #{book.title} by #{book.author}"
-
-    rental = Rental.new(date, book, @people[person_index])
-    add_rental(rental)
   end
 
   private
@@ -176,5 +76,35 @@ class App
     puts '5 - Create a rental'
     puts '6 - List all rentals for a given person id'
     puts '7 - Exit'
+  end
+
+  def save_person(person)
+    people_data = []
+
+    if File.exist?('./data/people.json')
+      file = File.read('./data/people.json')
+      people_data = JSON.parse(file) unless file.empty?
+    end
+
+    people_data << if person.is_a?(Teacher)
+                     { id: person.id, name: person.name, age: person.age, specialization: person.specialization }
+                   else
+                     { id: person.id, name: person.name, age: person.age }
+                   end
+
+    File.write('./data/people.json', JSON.generate(people_data))
+  end
+
+  def save_book(book)
+    books_data = []
+
+    if File.exist?('./data/books.json')
+      file = File.read('./data/books.json')
+      books_data = JSON.parse(file)
+    end
+
+    books_data << { title: book.title, author: book.author }
+
+    File.write('./data/books.json', JSON.pretty_generate(books_data))
   end
 end

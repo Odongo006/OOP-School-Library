@@ -13,19 +13,17 @@ class Decorator < Nameable
   end
 end
 
-# CapitalizeDecorator class
+# Capitalize Decorator class
 class CapitalizeDecorator < Decorator
   def correct_name
     nameable.correct_name.capitalize
   end
 end
 
-# TrimmerDecorator class
+# Trimmer Decorator class
 class TrimmerDecorator < Decorator
-  MAX_LENGTH = 10
-
   def correct_name
     name = nameable.correct_name
-    name.length > MAX_LENGTH ? name[0, MAX_LENGTH] : name
+    name.length > 10 ? name [0, 10] : name
   end
 end
