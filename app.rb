@@ -198,18 +198,18 @@ class App
 
   def save_person(person)
     people_data = []
-  
+
     if File.exist?('./data/people.json')
       file = File.read('./data/people.json')
       people_data = JSON.parse(file) unless file.empty?
     end
-  
+
     if person.is_a?(Teacher)
       people_data << { id: person.id, name: person.name, age: person.age, specialization: person.specialization }
     else
       people_data << { id: person.id, name: person.name, age: person.age }
     end
-  
+
     File.write('./data/people.json', JSON.generate(people_data))
   end
 
